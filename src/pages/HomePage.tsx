@@ -1,10 +1,13 @@
 import {
   IonContent,
   IonHeader,
+  IonItem,
+  IonList,
   IonPage,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
+import { entries } from "../data";
 
 const HomePage: React.FC = () => {
   return (
@@ -14,7 +17,21 @@ const HomePage: React.FC = () => {
           <IonTitle>Home Page</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">This is home page</IonContent>
+      <IonContent className="ion-padding">
+        <IonList>
+          {entries.map((entry) => {
+            return (
+              <IonItem
+                button
+                key={entry.id}
+                routerLink={`/entries/${entry.id}`}
+              >
+                {entry.title}
+              </IonItem>
+            );
+          })}
+        </IonList>
+      </IonContent>
     </IonPage>
   );
 };
