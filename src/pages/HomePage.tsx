@@ -24,7 +24,7 @@ const HomePage: React.FC = () => {
               <IonItem
                 button
                 key={entry.id}
-                routerLink={`/entries/${entry.id}`}
+                routerLink={`/my/entries/${entry.id}`}
               >
                 {entry.title}
               </IonItem>
