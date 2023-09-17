@@ -1,28 +1,31 @@
 import { IonApp } from "@ionic/react";
-import { Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { IonReactRouter } from "@ionic/react-router";
-import { IonRouterOutlet } from "@ionic/react";
 import LoginPage from "./pages/LoginPage";
 import { useState } from "react";
 import AppTabs from "./AppTabs";
+import { AuthContext } from "./auth";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route exact path={"/login"}>
-            <LoginPage
-              isLoggedIn={isLoggedIn}
-              onLoginProp={() => setIsLoggedIn(true)}
-            />
-          </Route>
-          <Route path={"/my"}>
-            <AppTabs isLoggedIn={isLoggedIn}></AppTabs>
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
+      <AuthContext.Provider value={{ isLoggedIn }}>
+        <IonReactRouter>
+          <Switch>
+            <Route exact path={"/login"}>
+              <LoginPage onLoginProp={() => setIsLoggedIn(true)} />
+            </Route>
+            <Route path={"/my"}>
+              <AppTabs></AppTabs>
+            </Route>
+            <Route>
+              <NotFoundPage></NotFoundPage>
+            </Route>
+          </Switch>
+        </IonReactRouter>
+      </AuthContext.Provider>
     </IonApp>
   );
 };

@@ -7,13 +7,14 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { Redirect } from "react-router";
+import { useAuth } from "../auth";
 
 interface Props {
   onLoginProp: () => void;
-  isLoggedIn: boolean;
 }
 
-const LoginPage: React.FC<Props> = ({ isLoggedIn, onLoginProp }) => {
+const LoginPage: React.FC<Props> = ({ onLoginProp }) => {
+  const { isLoggedIn } = useAuth();
   if (isLoggedIn) return <Redirect to="/my/entries" />;
   return (
     <IonPage>
