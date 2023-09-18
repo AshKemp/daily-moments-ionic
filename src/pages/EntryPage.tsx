@@ -11,6 +11,7 @@ import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { firestore } from "../firebase";
 import { Entry, convertToEntry } from "../models";
+import { useAuth } from "../auth";
 
 interface RouteParams {
   id: string;
@@ -19,12 +20,17 @@ interface RouteParams {
 const EntryPage: React.FC = () => {
   const { id } = useParams<RouteParams>();
   const [entry, setEntry] = useState<Entry>();
+  const { userId } = useAuth();
   useEffect(() => {
-    const entryRef = firestore.collection("entries").doc(id);
+    const entryRef = firestore
+      .collection("users")
+      .doc(userId)
+      .collection("entries")
+      .doc(id);
     entryRef.get().then((doc) => {
       setEntry(convertToEntry(doc));
     });
-  }, [id]);
+  }, [id, userId]);
 
   return (
     <IonPage>

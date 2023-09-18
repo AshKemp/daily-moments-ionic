@@ -11,13 +11,18 @@ import {
 import { useEffect, useState } from "react";
 import { firestore } from "../firebase";
 import { Entry, convertToEntry } from "../models";
+import { useAuth } from "../auth";
 
 const HomePage: React.FC = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
+  const { userId } = useAuth();
   useEffect(() => {
-    const entriesRef = firestore.collection("entries");
+    const entriesRef = firestore
+      .collection("users")
+      .doc(userId)
+      .collection("entries");
     entriesRef.get().then(({ docs }) => setEntries(docs.map(convertToEntry)));
-  }, []);
+  }, [userId]);
   return (
     <IonPage>
       <IonHeader>
