@@ -12,6 +12,7 @@ import { IonRouterOutlet } from "@ionic/react";
 import { home as homeIcon, settings as settingsIcon } from "ionicons/icons";
 import EntryPage from "./pages/EntryPage";
 import { useAuth } from "./auth";
+import AddEntryPage from "./pages/AddEntryPage";
 
 const AppTabs: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -25,7 +26,10 @@ const AppTabs: React.FC = () => {
         <Route exact path={"/my/settings"}>
           <SettingsPage />
         </Route>
-        <Route exact path={"/my/entries/:id}"}>
+        <Route exact path={"/my/entries/add"}>
+          <AddEntryPage />
+        </Route>
+        <Route exact path={"/my/entries/view/:id"}>
           <EntryPage />
         </Route>
         <Redirect exact path="/" to={"/my/entries"} />
