@@ -8,7 +8,9 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { useParams } from "react-router";
-import { entries } from "../data";
+import { useEffect, useState } from "react";
+import { firestore } from "../firebase";
+import { Entry, convertToEntry } from "../models";
 
 interface RouteParams {
   id: string;
@@ -16,11 +18,13 @@ interface RouteParams {
 
 const EntryPage: React.FC = () => {
   const { id } = useParams<RouteParams>();
-
-  const entry = entries.find((entry) => entry.id === id);
-  if (!entry) {
-    throw new Error("No such entry: " + entry.id);
-  }
+  const [entry, setEntry] = useState<Entry>();
+  useEffect(() => {
+    const entryRef = firestore.collection("entries").doc(id);
+    entryRef.get().then((doc) => {
+      setEntry(convertToEntry(doc));
+    });
+  }, [id]);
 
   return (
     <IonPage>
@@ -29,10 +33,10 @@ const EntryPage: React.FC = () => {
           <IonButtons slot="start">
             <IonBackButton></IonBackButton>
           </IonButtons>
-          <IonTitle>{entry.title}</IonTitle>
+          <IonTitle>{entry?.title}</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">{entry.description}</IonContent>
+      <IonContent className="ion-padding">{entry?.description}</IonContent>
     </IonPage>
   );
 };
