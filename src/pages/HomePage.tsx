@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
       .collection("users")
       .doc(userId)
       .collection("entries");
-    entriesRef.get().then(({ docs }) => setEntries(docs.map(convertToEntry)));
+    entriesRef.onSnapshot(({ docs }) => setEntries(docs.map(convertToEntry)));
   }, [userId]);
   return (
     <IonPage>
