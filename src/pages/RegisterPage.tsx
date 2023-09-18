@@ -17,16 +17,19 @@ import { useAuth } from "../auth";
 import { auth } from "../firebase";
 import { useState } from "react";
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState({ loading: false, error: false });
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
       setStatus({ loading: true, error: false });
-      const credential = await auth.signInWithEmailAndPassword(email, password);
+      const credential = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
       console.log("credential: ", credential);
     } catch (e) {
       console.log(e);
@@ -38,7 +41,7 @@ const LoginPage: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Login</IonTitle>
+          <IonTitle>Register</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
@@ -61,14 +64,14 @@ const LoginPage: React.FC = () => {
           </IonItem>
         </IonList>
         {status.error && (
-          <IonText color={"danger"}>Invalid credentials</IonText>
+          <IonText color={"danger"}>Registration Failed.</IonText>
         )}
 
-        <IonButton expand="block" onClick={handleLogin}>
-          Login
+        <IonButton expand="block" onClick={handleRegister}>
+          Create Account
         </IonButton>
-        <IonButton expand="block" routerLink="/register" fill="clear">
-          Don't have an account?
+        <IonButton expand="block" routerLink="/login" fill="clear">
+          Already have an account?
         </IonButton>
         <IonLoading isOpen={status.loading} />
       </IonContent>
@@ -76,4 +79,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
