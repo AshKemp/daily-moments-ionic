@@ -21,6 +21,8 @@ import { useHistory } from "react-router";
 const AddEntryPage: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+
   const { userId } = useAuth();
   const history = useHistory();
 
@@ -29,7 +31,7 @@ const AddEntryPage: React.FC = () => {
       .collection("users")
       .doc(userId)
       .collection("entries");
-    const entryData = { title, description };
+    const entryData = { title, description, date };
     const entryRef = await entriesRef.add(entryData);
     console.log("Saved: ", entryRef.id);
     history.goBack();
@@ -47,6 +49,14 @@ const AddEntryPage: React.FC = () => {
       </IonHeader>
       <IonContent className="ion-padding">
         <IonList>
+          <IonItem>
+            <IonLabel position="stacked">Date</IonLabel>
+            <IonInput
+              type="date"
+              value={date}
+              onIonChange={(event) => setDate(event.detail.value)}
+            ></IonInput>
+          </IonItem>
           <IonItem>
             <IonLabel position="stacked">Title</IonLabel>
             <IonInput
