@@ -13,7 +13,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { firestore } from "../firebase";
 import { useAuth } from "../auth";
 import { useHistory } from "react-router";
@@ -22,6 +22,8 @@ const AddEntryPage: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
+  const [pictureUrl, setPictureUrl] = useState("assets/placeholder.png");
+  const fileInputRef = useRef<HTMLInputElement>();
 
   const { userId } = useAuth();
   const history = useHistory();
@@ -36,6 +38,26 @@ const AddEntryPage: React.FC = () => {
     console.log("Saved: ", entryRef.id);
     history.goBack();
   };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.files.length > 0) {
+      const file = event.target.files.item(0);
+      const pictureUrl = URL.createObjectURL(file);
+      console.log("created URL: ", pictureUrl);
+      setPictureUrl(pictureUrl);
+    }
+  };
+
+  useEffect(
+    () => () => {
+      if (pictureUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(pictureUrl);
+      }
+    },
+    [pictureUrl]
+  );
 
   return (
     <IonPage>
@@ -63,6 +85,23 @@ const AddEntryPage: React.FC = () => {
               value={title}
               onIonChange={(event) => setTitle(event.detail.value)}
             ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="stacked">Picture</IonLabel>
+            <br />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              hidden
+            />
+            <img
+              src={pictureUrl}
+              style={{ cursor: "pointer" }}
+              alt=""
+              onClick={() => fileInputRef.current.click()}
+            ></img>
           </IonItem>
           <IonItem>
             <IonLabel position="stacked">Description</IonLabel>
