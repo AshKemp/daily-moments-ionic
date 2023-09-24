@@ -17,13 +17,23 @@ import { useEffect, useRef, useState } from "react";
 import { firestore, storage } from "../firebase";
 import { useAuth } from "../auth";
 import { useHistory } from "react-router";
+import { addDoc, collection } from "@firebase/firestore";
+import {
+  getDownloadURL,
+  ref as storageRef,
+  uploadBytes,
+} from "@firebase/storage";
+import { Camera, CameraResultType } from "@capacitor/camera";
 
 async function savePicture(blobUrl, userId) {
-  const pictureRef = storage.ref(`users/${userId}/pictures/${Date.now()}`);
+  const pictureRef = storageRef(
+    storage,
+    `users/${userId}/pictures/${Date.now()}`
+  );
   const response = await fetch(blobUrl);
   const blob = await response.blob();
-  const snapshot = pictureRef.put(blob);
-  const url = (await snapshot).ref.getDownloadURL();
+  const snapshot = await uploadBytes(pictureRef, blob);
+  const url = getDownloadURL(snapshot.ref);
   console.log("saved url: ", url);
   return url;
 }
@@ -39,15 +49,12 @@ const AddEntryPage: React.FC = () => {
   const history = useHistory();
 
   const handleSave = async () => {
-    const entriesRef = firestore
-      .collection("users")
-      .doc(userId)
-      .collection("entries");
+    const entriesRef = collection(firestore, "users", userId, "entries");
     const entryData = { title, description, date, pictureUrl };
     if (pictureUrl.startsWith("blob:")) {
       entryData.pictureUrl = await savePicture(pictureUrl, userId);
     }
-    const entryRef = await entriesRef.add(entryData);
+    const entryRef = await addDoc(entriesRef, entryData);
     console.log("Saved: ", entryRef.id);
     history.goBack();
   };
@@ -61,6 +68,14 @@ const AddEntryPage: React.FC = () => {
       console.log("created URL: ", pictureUrl);
       setPictureUrl(pictureUrl);
     }
+  };
+
+  const handlePictureClick = async () => {
+    const photo = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+    });
+    console.log("photo: ", photo);
+    setPictureUrl(photo.webPath);
   };
 
   useEffect(
@@ -113,7 +128,7 @@ const AddEntryPage: React.FC = () => {
               src={pictureUrl}
               style={{ cursor: "pointer" }}
               alt=""
-              onClick={() => fileInputRef.current.click()}
+              onClick={handlePictureClick}
             ></img>
           </IonItem>
           <IonItem>

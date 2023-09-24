@@ -20,18 +20,23 @@ import { Entry, convertToEntry } from "../models";
 import { useAuth } from "../auth";
 import { add as addIcon } from "ionicons/icons";
 import { formatDate } from "../utils";
+import {
+  collection,
+  query,
+  limit,
+  onSnapshot,
+  orderBy,
+} from "@firebase/firestore";
 
 const HomePage: React.FC = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
   const { userId } = useAuth();
   useEffect(() => {
-    const entriesRef = firestore
-      .collection("users")
-      .doc(userId)
-      .collection("entries")
-      .orderBy("date", "desc")
-      .limit(5);
-    entriesRef.onSnapshot(({ docs }) => setEntries(docs.map(convertToEntry)));
+    const entriesRef = collection(firestore, "users", userId, "entries");
+    const entriesQuery = query(entriesRef, orderBy("date", "desc"), limit(5));
+    return onSnapshot(entriesQuery, ({ docs }) =>
+      setEntries(docs.map(convertToEntry))
+    );
   }, [userId]);
   return (
     <IonPage>

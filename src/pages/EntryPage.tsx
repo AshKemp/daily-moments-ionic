@@ -16,6 +16,7 @@ import { Entry, convertToEntry } from "../models";
 import { useAuth } from "../auth";
 import { trash as trashIcon } from "ionicons/icons";
 import { formatDate } from "../utils";
+import { deleteDoc, doc, getDoc } from "@firebase/firestore";
 
 interface RouteParams {
   id: string;
@@ -28,23 +29,16 @@ const EntryPage: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const entryRef = firestore
-      .collection("users")
-      .doc(userId)
-      .collection("entries")
-      .doc(id);
-    entryRef.get().then((doc) => {
+    const entryRef = doc(firestore, "users", userId, "entries", id);
+
+    getDoc(entryRef).then((doc) => {
       setEntry(convertToEntry(doc));
     });
   }, [id, userId]);
 
   const handleDelete = async () => {
-    const entryRef = firestore
-      .collection("users")
-      .doc(userId)
-      .collection("entries")
-      .doc(id);
-    await entryRef.delete();
+    const entryRef = doc(firestore, "users", userId, "entries", id);
+    await deleteDoc(entryRef);
     history.goBack();
   };
 

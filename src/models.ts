@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import { DocumentSnapshot } from "@firebase/firestore";
 export interface Entry {
   id: string;
   title: string;
@@ -7,8 +7,6 @@ export interface Entry {
   pictureUrl: string;
 }
 
-export function convertToEntry(
-  doc: firebase.firestore.DocumentSnapshot
-): Entry {
+export function convertToEntry(doc: DocumentSnapshot): Entry {
   return { id: doc.id, ...doc.data() } as Entry;
 }

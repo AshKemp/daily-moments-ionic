@@ -16,6 +16,7 @@ import { Redirect } from "react-router";
 import { useAuth } from "../auth";
 import { auth } from "../firebase";
 import { useState } from "react";
+import { createUserWithEmailAndPassword } from "@firebase/auth";
 
 const RegisterPage: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -26,7 +27,8 @@ const RegisterPage: React.FC = () => {
   const handleRegister = async () => {
     try {
       setStatus({ loading: true, error: false });
-      const credential = await auth.createUserWithEmailAndPassword(
+      const credential = await createUserWithEmailAndPassword(
+        auth,
         email,
         password
       );

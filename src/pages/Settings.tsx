@@ -7,6 +7,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { auth } from "../firebase";
+import { signOut } from "@firebase/auth";
 
 const SettingsPage: React.FC = () => {
   return (
@@ -20,7 +21,7 @@ const SettingsPage: React.FC = () => {
         <IonButton
           color={"medium"}
           expand="block"
-          onClick={() => auth.signOut()}
+          onClick={() => signOut(auth)}
         >
           Logout
         </IonButton>
