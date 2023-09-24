@@ -23,7 +23,7 @@ import {
   ref as storageRef,
   uploadBytes,
 } from "@firebase/storage";
-import { Camera, CameraResultType } from "@capacitor/camera";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 
 async function savePicture(blobUrl, userId) {
   const pictureRef = storageRef(
@@ -51,7 +51,7 @@ const AddEntryPage: React.FC = () => {
   const handleSave = async () => {
     const entriesRef = collection(firestore, "users", userId, "entries");
     const entryData = { title, description, date, pictureUrl };
-    if (pictureUrl.startsWith("blob:")) {
+    if (!pictureUrl.startsWith("/assets")) {
       entryData.pictureUrl = await savePicture(pictureUrl, userId);
     }
     const entryRef = await addDoc(entriesRef, entryData);
@@ -71,11 +71,17 @@ const AddEntryPage: React.FC = () => {
   };
 
   const handlePictureClick = async () => {
-    const photo = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
-    });
-    console.log("photo: ", photo);
-    setPictureUrl(photo.webPath);
+    try {
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Uri,
+        width: 600,
+        source: CameraSource.Prompt,
+      });
+      console.log("photo: ", photo);
+      setPictureUrl(photo.webPath);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(
